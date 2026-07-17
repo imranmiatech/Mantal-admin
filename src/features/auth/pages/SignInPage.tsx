@@ -37,49 +37,51 @@ export function SignInPage() {
       asideTitle="One access point for district risk operations"
       asideText="Use the same clean entry point for admin approvals, researcher submissions, and protected dashboard workflows without bouncing between mismatched screens."
     >
-      <StatusMessage tone="success" message={signUpMessage} />
-      <StatusMessage tone="error" message={error} />
-      <form
-        className="space-y-5"
-        onSubmit={(event) => {
-          event.preventDefault()
-          dispatch(signIn(form))
-        }}
-      >
-        <InputField
-          label="Email"
-          type="email"
-          autoComplete="email"
-          value={form.email}
-          onChange={(event) =>
-            setForm((current) => ({ ...current, email: event.target.value }))
-          }
-          placeholder="admin@example.com"
-          required
-        />
-        <InputField
-          label="Password"
-          type="password"
-          autoComplete="current-password"
-          value={form.password}
-          onChange={(event) =>
-            setForm((current) => ({ ...current, password: event.target.value }))
-          }
-          placeholder="Minimum 6 characters"
-          required
-        />
-        <Button type="submit" busy={status === 'loading'} className="h-13 w-full">
-          Sign in
-        </Button>
-      </form>
-      <div className="rounded-3xl border border-white/10 bg-white/4 p-4 text-sm text-white/65">
-        <p className="font-medium text-white">Need a researcher account?</p>
-        <p className="mt-1 leading-6">
-          Create one here and wait for admin approval before the first login.{' '}
-          <Link className="font-semibold text-lime-200 hover:text-lime-100" to="/sign-up">
-            Go to sign up
-          </Link>
-        </p>
+      <div className="space-y-6">
+        <StatusMessage tone="success" message={signUpMessage} />
+        <StatusMessage tone="error" message={error} />
+        <form
+          className="space-y-5"
+          onSubmit={(event) => {
+            event.preventDefault()
+            dispatch(signIn(form))
+          }}
+        >
+          <InputField
+            label="Email"
+            type="email"
+            autoComplete="email"
+            value={form.email}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, email: event.target.value }))
+            }
+            placeholder="admin@example.com"
+            required
+          />
+          <InputField
+            label="Password"
+            type="password"
+            autoComplete="current-password"
+            value={form.password}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, password: event.target.value }))
+            }
+            placeholder="Minimum 6 characters"
+            required
+          />
+          <Button type="submit" busy={status === 'loading'} className="h-13 w-full">
+            Sign in
+          </Button>
+        </form>
+        <div className="rounded-3xl border border-white/10 bg-white/4 p-4 text-sm text-white/65">
+          <p className="font-medium text-white">Need a researcher account?</p>
+          <p className="mt-1 leading-6">
+            Create one here and wait for admin approval before the first login.{' '}
+            <Link className="font-semibold text-lime-200 hover:text-lime-100" to="/sign-up">
+              Go to sign up
+            </Link>
+          </p>
+        </div>
       </div>
     </AuthLayout>
   )

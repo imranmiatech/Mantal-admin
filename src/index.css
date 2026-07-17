@@ -153,6 +153,18 @@ textarea {
   color: #f5f7f2;
 }
 
+/* Make select text and options readable on the light dropdown background */
+/* Keep closed select text light to contrast the dark background, but
+   style dropdown options for readability on white menus. */
+select.field__control {
+  color: #f5f7f2; /* same as other inputs */
+}
+
+select.field__control option {
+  color: var(--primary-ink);
+  background: #ffffff;
+}
+
 .field__control--textarea {
   min-height: 132px;
   resize: vertical;
