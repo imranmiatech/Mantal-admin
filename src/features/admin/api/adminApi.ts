@@ -4,11 +4,7 @@ import type {
   DistrictOption,
   Division,
   HierarchyDistrict,
-  PendingResearcher,
-  PendingSubmission,
-  PublishedSubmission,
   Upazila,
-  AllResearcher,
   PaginatedResearchers,
   PaginatedPendingResearchers,
   PaginatedPendingSubmissions,
@@ -46,8 +42,9 @@ export function createSubmissionRequest(payload: CreateSubmissionPayload) {
   })
 }
 
-export function getAllResearchersRequest(page: number = 1, limit: number = 10) {
-  return apiRequest<PaginatedResearchers>(`/api/admin/users/researchers?page=${page}&limit=${limit}`)
+export function getAllResearchersRequest(page: number = 1, limit: number = 5, search?: string) {
+  const searchQuery = search ? `&search=${encodeURIComponent(search)}` : ''
+  return apiRequest<PaginatedResearchers>(`/api/admin/users/researchers?page=${page}&limit=${limit}${searchQuery}`)
 }
 
 export function getResearcherSubmissionsRequest(id: string) {

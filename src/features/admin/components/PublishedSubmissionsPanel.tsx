@@ -21,122 +21,58 @@ export function PublishedSubmissionsPanel() {
 
   return (
     <>
-      <style>{`
-        .table-container {
-          margin-top: 16px;
-          overflow-x: auto;
-        }
-        .published-table {
-          width: 100%;
-          border-collapse: separate;
-          border-spacing: 0;
-          text-align: left;
-        }
-        .published-table th {
-          padding: 14px 16px;
-          color: var(--text-soft);
-          font-weight: 600;
-          font-size: 0.85rem;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .published-table td {
-          padding: 16px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-          vertical-align: top;
-        }
-        .table-row {
-          transition: background 0.2s ease;
-        }
-        .table-row:hover {
-          background: rgba(255, 255, 255, 0.03);
-        }
-        .location-name {
-          font-weight: 600;
-          font-size: 1rem;
-          margin-bottom: 2px;
-          display: block;
-        }
-        .meta-text {
-          color: var(--text-soft);
-          font-size: 0.85rem;
-          margin-top: 4px;
-        }
-        .scores-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 4px 8px;
-          font-size: 0.8rem;
-          color: var(--text-soft);
-        }
-        .scores-grid strong {
-          color: #fff;
-        }
-        .pagination-controls {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-top: 24px;
-          padding-top: 16px;
-          border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .pagination-info {
-          font-size: 0.9rem;
-          color: var(--text-soft);
-        }
-      `}</style>
-
       <Panel
         title="Published submissions"
         description="Live district and upazila records already exposed through the admin published endpoint."
       >
-        <div className="table-container">
-          <table className="published-table">
+        <div className="overflow-x-auto -mx-6 sm:mx-0">
+          <table className="w-full min-w-[700px] text-left border-collapse">
             <thead>
-              <tr>
-                <th>Location</th>
-                <th>Risk Level</th>
-                <th>Scores</th>
-                <th>Published Date</th>
+              <tr className="border-b border-slate-200 text-[11px] font-extrabold tracking-widest text-slate-400 uppercase">
+                <th className="px-6 py-4">Location</th>
+                <th className="px-6 py-4">Risk Level</th>
+                <th className="px-6 py-4">Scores</th>
+                <th className="px-6 py-4">Published Date</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-100">
               {publishedSubmissions.length === 0 ? (
                 <tr>
-                  <td colSpan={4} style={{ textAlign: 'center', padding: '32px' }} className="empty-state">
+                  <td colSpan={4} className="px-6 py-12 text-center text-slate-400">
                     No published submissions found.
                   </td>
                 </tr>
               ) : (
                 publishedSubmissions.map((submission) => (
-                  <tr key={submission.id} className="table-row">
-                    <td>
-                      <span className="location-name">{submission.district}</span>
-                      <div className="meta-text">
+                  <tr key={submission.id} className="hover:bg-slate-50 transition-colors group">
+                    <td className="px-6 py-4">
+                      <span className="block font-semibold text-slate-900">{submission.district}</span>
+                      <div className="text-sm text-slate-500 mt-1">
                         {submission.division}
                         {submission.upazilaName ? ` • ${submission.upazilaName}` : ''}
                       </div>
                     </td>
-                    <td>
-                      <div style={{ marginBottom: '8px' }}>
-                        <span className="pill">{submission.riskLevel}</span>
+                    <td className="px-6 py-4">
+                      <div className="mb-2">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          {submission.riskLevel}
+                        </span>
                       </div>
-                      <div className="meta-text">
-                        Index: <strong>{submission.riskIndex}</strong>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="scores-grid">
-                        <span>CE: <strong>{submission.ce}</strong></span>
-                        <span>AI: <strong>{submission.ag}</strong></span>
-                        <span>PS: <strong>{submission.ps}</strong></span>
-                        <span>AC: <strong>{submission.ac}</strong></span>
+                      <div className="text-sm text-slate-500">
+                        Index: <strong className="text-slate-900">{submission.riskIndex}</strong>
                       </div>
                     </td>
-                    <td>
-                      <div className="meta-text">
-                        {submission.publishedAt ? new Date(submission.publishedAt).toLocaleString() : '-'}
+                    <td className="px-6 py-4">
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-slate-500">
+                        <span>CE: <strong className="text-slate-900">{submission.ce}</strong></span>
+                        <span>AI: <strong className="text-slate-900">{submission.ag}</strong></span>
+                        <span>PS: <strong className="text-slate-900">{submission.ps}</strong></span>
+                        <span>AC: <strong className="text-slate-900">{submission.ac}</strong></span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm text-slate-500">
+                        {submission.publishedAt ? new Date(submission.publishedAt).toLocaleString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}
                       </div>
                     </td>
                   </tr>
@@ -147,15 +83,16 @@ export function PublishedSubmissionsPanel() {
         </div>
 
         {publishedSubmissionsMeta && publishedSubmissionsMeta.totalPages > 1 && (
-          <div className="pagination-controls">
-            <span className="pagination-info">
-              Showing page {publishedSubmissionsMeta.page} of {publishedSubmissionsMeta.totalPages} ({publishedSubmissionsMeta.total} total)
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6 pt-6 border-t border-slate-200">
+            <span className="text-sm text-slate-500 font-medium tracking-wide">
+              Showing page <strong className="text-slate-900">{publishedSubmissionsMeta.page}</strong> of <strong className="text-slate-900">{publishedSubmissionsMeta.totalPages}</strong> ({publishedSubmissionsMeta.total} total)
             </span>
-            <div className="row">
+            <div className="flex items-center gap-2">
               <Button 
                 variant="secondary" 
                 onClick={handlePrevPage}
                 disabled={publishedSubmissionsMeta.page === 1}
+                className="!min-h-10 !py-2 !px-4 text-xs"
               >
                 Previous
               </Button>
@@ -163,6 +100,7 @@ export function PublishedSubmissionsPanel() {
                 variant="secondary" 
                 onClick={handleNextPage}
                 disabled={publishedSubmissionsMeta.page === publishedSubmissionsMeta.totalPages}
+                className="!min-h-10 !py-2 !px-4 text-xs"
               >
                 Next
               </Button>

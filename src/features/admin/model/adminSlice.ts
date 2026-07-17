@@ -101,7 +101,7 @@ export const fetchDashboardData = createAsyncThunk(
 
 export const fetchResearchersPage = createAsyncThunk(
   'admin/fetchResearchersPage',
-  async (page: number) => getAllResearchersRequest(page)
+  async ({ page, search }: { page: number; search?: string }) => getAllResearchersRequest(page, 5, search)
 )
 
 export const fetchPendingResearchersPage = createAsyncThunk(

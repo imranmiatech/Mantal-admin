@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../../app/hooks'
 import { Button } from '../../../shared/ui/Button'
-import { InputField } from '../../../shared/ui/InputField'
 import { Panel } from '../../../shared/ui/Panel'
 import { approveResearcher, fetchPendingResearchersPage } from '../model/adminSlice'
 
@@ -24,97 +23,47 @@ export function PendingResearchersPanel() {
 
   return (
     <>
-      <style>{`
-        .table-container {
-          margin-top: 16px;
-          overflow-x: auto;
-        }
-        .researcher-table {
-          width: 100%;
-          border-collapse: separate;
-          border-spacing: 0;
-          text-align: left;
-        }
-        .researcher-table th {
-          padding: 14px 16px;
-          color: var(--text-soft);
-          font-weight: 600;
-          font-size: 0.85rem;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .researcher-table td {
-          padding: 16px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-          vertical-align: middle;
-        }
-        .table-row {
-          transition: background 0.2s ease;
-        }
-        .table-row:hover {
-          background: rgba(255, 255, 255, 0.03);
-        }
-        .researcher-name {
-          font-weight: 600;
-          font-size: 1rem;
-          margin-bottom: 2px;
-          display: block;
-        }
-        .researcher-email {
-          color: var(--text-soft);
-          font-size: 0.85rem;
-        }
-        .pagination-controls {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-top: 24px;
-          padding-top: 16px;
-          border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .pagination-info {
-          font-size: 0.9rem;
-          color: var(--text-soft);
-        }
-      `}</style>
-
       <Panel
         title="Pending researcher approvals"
         description="Review and approve researcher accounts. Optional notes are stored in the approval audit."
       >
-        <div className="table-container">
-          <table className="researcher-table">
+        <div className="overflow-x-auto -mx-6 sm:mx-0">
+          <table className="w-full min-w-[700px] text-left border-collapse">
             <thead>
-              <tr>
-                <th>Researcher</th>
-                <th>Joined Date</th>
-                <th>Status</th>
-                <th>Approval Note</th>
-                <th>Action</th>
+              <tr className="border-b border-slate-200 text-[11px] font-extrabold tracking-widest text-slate-400 uppercase">
+                <th className="px-6 py-4">Researcher</th>
+                <th className="px-6 py-4">Joined Date</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4 w-[250px]">Approval Note</th>
+                <th className="px-6 py-4 text-right">Action</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-100">
               {pendingResearchers.length === 0 ? (
                 <tr>
-                  <td colSpan={5} style={{ textAlign: 'center', padding: '32px' }} className="empty-state">
+                  <td colSpan={5} className="px-6 py-12 text-center text-slate-400">
                     No pending researchers right now.
                   </td>
                 </tr>
               ) : (
                 pendingResearchers.map((researcher) => (
-                  <tr key={researcher.id} className="table-row">
-                    <td>
-                      <span className="researcher-name">{researcher.fullName}</span>
-                      <span className="researcher-email">{researcher.email}</span>
+                  <tr key={researcher.id} className="hover:bg-slate-50 transition-colors group">
+                    <td className="px-6 py-4">
+                      <span className="block font-semibold text-slate-900">{researcher.fullName}</span>
+                      <span className="block text-sm text-slate-500">{researcher.email}</span>
                     </td>
-                    <td>{new Date(researcher.createdAt).toLocaleDateString()}</td>
-                    <td>
-                      <span className="pill">{researcher.approvalStatus}</span>
+                    <td className="px-6 py-4 text-sm text-slate-600">
+                      {new Date(researcher.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
                     </td>
-                    <td style={{ minWidth: '200px' }}>
-                      <InputField
-                        label=""
+                    <td className="px-6 py-4">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                        {researcher.approvalStatus}
+                      </span>
+                    </td>
+                    <td className="px-6 py-2">
+                      <input
+                        type="text"
+                        className="glass-input h-10 w-full rounded-lg px-3 text-sm outline-none transition-all duration-200 placeholder-slate-500"
                         value={notes[researcher.id] ?? ''}
                         onChange={(event) =>
                           setNotes((current) => ({
@@ -124,10 +73,9 @@ export function PendingResearchersPanel() {
                         }
                         placeholder="Optional note"
                         maxLength={300}
-                        hideLabel
                       />
                     </td>
-                    <td>
+                    <td className="px-6 py-4 text-right">
                       <Button
                         type="button"
                         busy={actionLoading}
@@ -139,6 +87,7 @@ export function PendingResearchersPanel() {
                             }),
                           )
                         }
+                        className="!min-h-9 !py-1.5 !px-4 text-xs shadow-none"
                       >
                         Approve
                       </Button>
@@ -151,15 +100,16 @@ export function PendingResearchersPanel() {
         </div>
 
         {pendingResearchersMeta && pendingResearchersMeta.totalPages > 1 && (
-          <div className="pagination-controls">
-            <span className="pagination-info">
-              Showing page {pendingResearchersMeta.page} of {pendingResearchersMeta.totalPages} ({pendingResearchersMeta.total} total)
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6 pt-6 border-t border-slate-200">
+            <span className="text-sm text-slate-500 font-medium tracking-wide">
+              Showing page <strong className="text-slate-900">{pendingResearchersMeta.page}</strong> of <strong className="text-slate-900">{pendingResearchersMeta.totalPages}</strong> ({pendingResearchersMeta.total} total)
             </span>
-            <div className="row">
+            <div className="flex items-center gap-2">
               <Button 
                 variant="secondary" 
                 onClick={handlePrevPage}
                 disabled={pendingResearchersMeta.page === 1}
+                className="!min-h-10 !py-2 !px-4 text-xs"
               >
                 Previous
               </Button>
@@ -167,6 +117,7 @@ export function PendingResearchersPanel() {
                 variant="secondary" 
                 onClick={handleNextPage}
                 disabled={pendingResearchersMeta.page === pendingResearchersMeta.totalPages}
+                className="!min-h-10 !py-2 !px-4 text-xs"
               >
                 Next
               </Button>

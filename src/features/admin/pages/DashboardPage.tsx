@@ -74,22 +74,32 @@ export function DashboardPage() {
       />
 
       {(isAdmin ? admin.loading : researcher.loading) ? (
-        <div className="panel">Loading dashboard data...</div>
+        <div className="glass-panel p-12 text-center animate-pulse">
+          <p className="text-lg text-slate-400 font-medium">Loading dashboard data...</p>
+        </div>
       ) : (
-        <div className="dashboard__grid">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
           {isAdmin ? (
             <>
-              <CreateSubmissionPanel />
-              <PendingResearchersPanel />
-              <AllResearchersPanel />
-              <PendingSubmissionsPanel />
-              <PublishedSubmissionsPanel />
+              <div className="flex flex-col gap-8">
+                <CreateSubmissionPanel />
+                <PendingResearchersPanel />
+                <PendingSubmissionsPanel />
+              </div>
+              <div className="flex flex-col gap-8">
+                <AllResearchersPanel />
+                <PublishedSubmissionsPanel />
+              </div>
             </>
           ) : (
             <>
-              <ResearcherCreateSubmissionPanel />
-              <ResearcherBulkSubmissionPanel />
-              <ResearcherSubmissionsPanel />
+              <div className="flex flex-col gap-8">
+                <ResearcherCreateSubmissionPanel />
+                <ResearcherBulkSubmissionPanel />
+              </div>
+              <div className="flex flex-col gap-8">
+                <ResearcherSubmissionsPanel />
+              </div>
             </>
           )}
         </div>

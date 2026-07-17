@@ -21,141 +21,68 @@ export function PendingSubmissionsPanel() {
 
   return (
     <>
-      <style>{`
-        .table-container {
-          margin-top: 16px;
-          overflow-x: auto;
-        }
-        .submission-table {
-          width: 100%;
-          border-collapse: separate;
-          border-spacing: 0;
-          text-align: left;
-        }
-        .submission-table th {
-          padding: 14px 16px;
-          color: var(--text-soft);
-          font-weight: 600;
-          font-size: 0.85rem;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .submission-table td {
-          padding: 16px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-          vertical-align: top;
-        }
-        .table-row {
-          transition: background 0.2s ease;
-        }
-        .table-row:hover {
-          background: rgba(255, 255, 255, 0.03);
-        }
-        .location-name {
-          font-weight: 600;
-          font-size: 1rem;
-          margin-bottom: 2px;
-          display: block;
-        }
-        .meta-text {
-          color: var(--text-soft);
-          font-size: 0.85rem;
-          margin-top: 4px;
-        }
-        .scores-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 4px 8px;
-          font-size: 0.8rem;
-          color: var(--text-soft);
-        }
-        .scores-grid strong {
-          color: #fff;
-        }
-        .narrative-text {
-          font-size: 0.9rem;
-          color: var(--text-soft);
-          display: -webkit-box;
-          -webkit-line-clamp: 3;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-          max-width: 300px;
-        }
-        .pagination-controls {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-top: 24px;
-          padding-top: 16px;
-          border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .pagination-info {
-          font-size: 0.9rem;
-          color: var(--text-soft);
-        }
-      `}</style>
-
       <Panel
         title="Pending researcher submissions"
         description="Approve for publishing or reject pending district risk submissions from researchers."
       >
-        <div className="table-container">
-          <table className="submission-table">
+        <div className="overflow-x-auto -mx-6 sm:mx-0">
+          <table className="w-full min-w-[800px] text-left border-collapse">
             <thead>
-              <tr>
-                <th>Location & Author</th>
-                <th>Risk Data</th>
-                <th>Narrative</th>
-                <th>Actions</th>
+              <tr className="border-b border-slate-200 text-[11px] font-extrabold tracking-widest text-slate-400 uppercase">
+                <th className="px-6 py-4">Location & Author</th>
+                <th className="px-6 py-4">Risk Data</th>
+                <th className="px-6 py-4">Narrative</th>
+                <th className="px-6 py-4 w-32 text-center">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-100">
               {pendingSubmissions.length === 0 ? (
                 <tr>
-                  <td colSpan={4} style={{ textAlign: 'center', padding: '32px' }} className="empty-state">
+                  <td colSpan={4} className="px-6 py-12 text-center text-slate-400">
                     No pending submissions waiting for review.
                   </td>
                 </tr>
               ) : (
                 pendingSubmissions.map((submission) => (
-                  <tr key={submission.id} className="table-row">
-                    <td>
-                      <span className="location-name">
+                  <tr key={submission.id} className="hover:bg-slate-50 transition-colors group">
+                    <td className="px-6 py-4">
+                      <span className="block font-semibold text-slate-900">
                         {submission.district}
                         {submission.upazilaName ? `, ${submission.upazilaName}` : ''}
                       </span>
-                      <div className="meta-text">
-                        {submission.division} <br />
-                        By {submission.researcher.fullName} <br />
-                        ({submission.researcher.email}) <br />
-                        {new Date(submission.createdAt).toLocaleDateString()}
+                      <div className="text-sm text-slate-500 mt-1 space-y-0.5">
+                        <p>{submission.division}</p>
+                        <p>By {submission.researcher.fullName}</p>
+                        <p className="text-slate-500 truncate w-48">({submission.researcher.email})</p>
+                        <p className="text-slate-600 font-medium">{new Date(submission.createdAt).toLocaleDateString()}</p>
                       </div>
                     </td>
-                    <td style={{ minWidth: '160px' }}>
-                      <div style={{ marginBottom: '8px' }}>
-                        <span className="pill">{submission.riskLevel}</span>
+                    <td className="px-6 py-4 min-w-[160px]">
+                      <div className="mb-3">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                          {submission.riskLevel}
+                        </span>
                       </div>
-                      <div className="scores-grid">
-                        <span>Index: <strong>{submission.riskIndex}</strong></span>
-                        <span>CE: <strong>{submission.values.climateExposure}</strong></span>
-                        <span>AI: <strong>{submission.values.ageingIndex}</strong></span>
-                        <span>PS: <strong>{submission.values.psychologicalStress}</strong></span>
-                        <span>AC: <strong>{submission.values.adaptabilityCapacity}</strong></span>
+                      <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-slate-500">
+                        <span>Index: <strong className="text-slate-900">{submission.riskIndex}</strong></span>
+                        <span>CE: <strong className="text-slate-900">{submission.values.climateExposure}</strong></span>
+                        <span>AI: <strong className="text-slate-900">{submission.values.ageingIndex}</strong></span>
+                        <span>PS: <strong className="text-slate-900">{submission.values.psychologicalStress}</strong></span>
+                        <span>AC: <strong className="text-slate-900">{submission.values.adaptabilityCapacity}</strong></span>
                       </div>
                     </td>
-                    <td>
-                      <div className="narrative-text" title={submission.narrative}>
+                    <td className="px-6 py-4">
+                      <div className="text-sm text-slate-600 line-clamp-4 max-w-xs" title={submission.narrative}>
                         {submission.narrative}
                       </div>
                     </td>
-                    <td style={{ minWidth: '180px' }}>
-                      <div className="row" style={{ flexDirection: 'column', gap: '8px' }}>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col gap-2">
                         <Button
                           type="button"
                           busy={actionLoading}
                           onClick={() => dispatch(publishSubmission(submission.id))}
-                          style={{ width: '100%' }}
+                          className="w-full !min-h-9 !py-1.5 !px-3 text-xs shadow-none"
                         >
                           Publish
                         </Button>
@@ -164,7 +91,7 @@ export function PendingSubmissionsPanel() {
                           variant="danger"
                           busy={actionLoading}
                           onClick={() => dispatch(rejectSubmission(submission.id))}
-                          style={{ width: '100%' }}
+                          className="w-full !min-h-9 !py-1.5 !px-3 text-xs shadow-none"
                         >
                           Reject
                         </Button>
@@ -178,15 +105,16 @@ export function PendingSubmissionsPanel() {
         </div>
 
         {pendingSubmissionsMeta && pendingSubmissionsMeta.totalPages > 1 && (
-          <div className="pagination-controls">
-            <span className="pagination-info">
-              Showing page {pendingSubmissionsMeta.page} of {pendingSubmissionsMeta.totalPages} ({pendingSubmissionsMeta.total} total)
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6 pt-6 border-t border-slate-200">
+            <span className="text-sm text-slate-500 font-medium tracking-wide">
+              Showing page <strong className="text-slate-900">{pendingSubmissionsMeta.page}</strong> of <strong className="text-slate-900">{pendingSubmissionsMeta.totalPages}</strong> ({pendingSubmissionsMeta.total} total)
             </span>
-            <div className="row">
+            <div className="flex items-center gap-2">
               <Button 
                 variant="secondary" 
                 onClick={handlePrevPage}
                 disabled={pendingSubmissionsMeta.page === 1}
+                className="!min-h-10 !py-2 !px-4 text-xs"
               >
                 Previous
               </Button>
@@ -194,6 +122,7 @@ export function PendingSubmissionsPanel() {
                 variant="secondary" 
                 onClick={handleNextPage}
                 disabled={pendingSubmissionsMeta.page === pendingSubmissionsMeta.totalPages}
+                className="!min-h-10 !py-2 !px-4 text-xs"
               >
                 Next
               </Button>

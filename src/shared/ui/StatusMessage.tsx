@@ -12,13 +12,13 @@ export function StatusMessage({
   }
 
   const toneClasses = {
-    success: 'border-lime-300/20 bg-lime-300/12 text-lime-100',
-    error: 'border-rose-300/20 bg-rose-400/12 text-rose-100',
-    info: 'border-sky-300/20 bg-sky-400/12 text-sky-100',
+    success: 'border-emerald-200 bg-emerald-50 text-emerald-800 shadow-sm',
+    error: 'border-rose-200 bg-rose-50 text-rose-800 shadow-sm',
+    info: 'border-indigo-200 bg-indigo-50 text-indigo-800 shadow-sm',
   }[tone]
 
   return (
-    <div className={`rounded-2xl border px-4 py-3 text-sm leading-6 ${toneClasses}`}>
+    <div className={`rounded-xl border backdrop-blur-md px-5 py-3.5 text-sm font-medium leading-relaxed tracking-wide transition-all ${toneClasses}`}>
       {message}
     </div>
   )

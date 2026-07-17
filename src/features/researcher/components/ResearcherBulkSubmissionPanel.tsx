@@ -71,7 +71,7 @@ export function ResearcherBulkSubmissionPanel() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h4 style={{ margin: 0 }}>Submission #{index + 1}</h4>
                 {rows.length > 1 && (
-                  <Button type="button" variant="danger" onClick={() => removeRow(index)} size="sm">
+                  <Button type="button" variant="danger" onClick={() => removeRow(index)}>
                     Remove
                   </Button>
                 )}

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAppDispatch, useAppSelector } from '../../../app/hooks'
 import { Panel } from '../../../shared/ui/Panel'
 import { Button } from '../../../shared/ui/Button'
@@ -10,116 +10,65 @@ export function AllResearchersPanel() {
   const dispatch = useAppDispatch()
   const { allResearchers, researcherMeta } = useAppSelector((state) => state.admin)
   const [selectedResearcher, setSelectedResearcher] = useState<AllResearcher | null>(null)
+  const [search, setSearch] = useState('')
+  const isInitialMount = useRef(true)
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+      return
+    }
+    const timer = setTimeout(() => {
+      dispatch(fetchResearchersPage({ page: 1, search }))
+    }, 400)
+    return () => clearTimeout(timer)
+  }, [search, dispatch])
 
   const handleNextPage = () => {
     if (researcherMeta && researcherMeta.page < researcherMeta.totalPages) {
-      dispatch(fetchResearchersPage(researcherMeta.page + 1))
+      dispatch(fetchResearchersPage({ page: researcherMeta.page + 1, search }))
     }
   }
 
   const handlePrevPage = () => {
     if (researcherMeta && researcherMeta.page > 1) {
-      dispatch(fetchResearchersPage(researcherMeta.page - 1))
+      dispatch(fetchResearchersPage({ page: researcherMeta.page - 1, search }))
     }
   }
 
   return (
     <>
-      <style>{`
-        .table-container {
-          margin-top: 16px;
-          overflow-x: auto;
-        }
-
-        .researcher-table {
-          width: 100%;
-          border-collapse: separate;
-          border-spacing: 0;
-          text-align: left;
-        }
-
-        .researcher-table th {
-          padding: 14px 16px;
-          color: var(--text-soft);
-          font-weight: 600;
-          font-size: 0.85rem;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .researcher-table td {
-          padding: 16px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-          vertical-align: middle;
-        }
-
-        .table-row {
-          transition: background 0.2s ease;
-          cursor: pointer;
-        }
-
-        .table-row:hover {
-          background: rgba(255, 255, 255, 0.03);
-        }
-
-        .researcher-name {
-          font-weight: 600;
-          font-size: 1rem;
-          margin-bottom: 2px;
-          display: block;
-        }
-
-        .researcher-email {
-          color: var(--text-soft);
-          font-size: 0.85rem;
-        }
-
-        .post-count-badge {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          background: rgba(183, 221, 121, 0.15);
-          color: var(--primary);
-          padding: 4px 12px;
-          border-radius: 99px;
-          font-weight: 700;
-          font-size: 0.85rem;
-        }
-        
-        .pagination-controls {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-top: 24px;
-          padding-top: 16px;
-          border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .pagination-info {
-          font-size: 0.9rem;
-          color: var(--text-soft);
-        }
-      `}</style>
-
       <Panel
         title="All Researchers"
         description="View and manage researchers. Click a row to see their submissions."
       >
-        <div className="table-container">
-          <table className="researcher-table">
+        <div className="mb-4">
+          <div className="relative max-w-sm">
+            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <input
+              type="text"
+              className="glass-input h-11 w-full rounded-xl pl-11 pr-4 outline-none transition-all duration-200 text-sm"
+              placeholder="Search by name or email..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="overflow-x-auto -mx-6 sm:mx-0">
+          <table className="w-full min-w-[600px] text-left border-collapse">
             <thead>
-              <tr>
-                <th>Researcher</th>
-                <th>Joined Date</th>
-                <th>Status</th>
-                <th>Posts</th>
+              <tr className="border-b border-slate-200 text-[11px] font-extrabold tracking-widest text-slate-400 uppercase">
+                <th className="px-6 py-4">Researcher</th>
+                <th className="px-6 py-4">Joined Date</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4">Posts</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-100">
               {allResearchers.length === 0 ? (
                 <tr>
-                  <td colSpan={4} style={{ textAlign: 'center', padding: '32px' }} className="empty-state">
+                  <td colSpan={4} className="px-6 py-12 text-center text-slate-400">
                     No researchers found.
                   </td>
                 </tr>
@@ -127,19 +76,23 @@ export function AllResearchersPanel() {
                 allResearchers.map((researcher) => (
                   <tr 
                     key={researcher.id} 
-                    className="table-row"
+                    className="hover:bg-slate-50 transition-colors cursor-pointer group"
                     onClick={() => setSelectedResearcher(researcher)}
                   >
-                    <td>
-                      <span className="researcher-name">{researcher.fullName}</span>
-                      <span className="researcher-email">{researcher.email}</span>
+                    <td className="px-6 py-4">
+                      <span className="block font-semibold text-slate-900 group-hover:text-emerald-600 transition-colors">{researcher.fullName}</span>
+                      <span className="block text-sm text-slate-500">{researcher.email}</span>
                     </td>
-                    <td>{new Date(researcher.createdAt).toLocaleDateString()}</td>
-                    <td>
-                      <span className="pill">{researcher.approvalStatus}</span>
+                    <td className="px-6 py-4 text-sm text-slate-600">
+                      {new Date(researcher.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
                     </td>
-                    <td>
-                      <span className="post-count-badge">
+                    <td className="px-6 py-4">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        {researcher.approvalStatus}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 border border-slate-200 text-slate-700 font-bold text-sm shadow-inner group-hover:bg-emerald-50 group-hover:text-emerald-700 group-hover:border-emerald-200 transition-all">
                         {researcher._count.submissions}
                       </span>
                     </td>
@@ -151,15 +104,16 @@ export function AllResearchersPanel() {
         </div>
 
         {researcherMeta && researcherMeta.totalPages > 1 && (
-          <div className="pagination-controls">
-            <span className="pagination-info">
-              Showing page {researcherMeta.page} of {researcherMeta.totalPages} ({researcherMeta.total} total)
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6 pt-6 border-t border-slate-200">
+            <span className="text-sm text-slate-500 font-medium tracking-wide">
+              Showing page <strong className="text-slate-900">{researcherMeta.page}</strong> of <strong className="text-slate-900">{researcherMeta.totalPages}</strong> ({researcherMeta.total} total)
             </span>
-            <div className="row">
+            <div className="flex items-center gap-2">
               <Button 
                 variant="secondary" 
                 onClick={handlePrevPage}
                 disabled={researcherMeta.page === 1}
+                className="!min-h-10 !py-2 !px-4 text-xs"
               >
                 Previous
               </Button>
@@ -167,6 +121,7 @@ export function AllResearchersPanel() {
                 variant="secondary" 
                 onClick={handleNextPage}
                 disabled={researcherMeta.page === researcherMeta.totalPages}
+                className="!min-h-10 !py-2 !px-4 text-xs"
               >
                 Next
               </Button>
