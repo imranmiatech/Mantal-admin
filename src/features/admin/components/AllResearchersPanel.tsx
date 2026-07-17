@@ -1,24 +1,25 @@
 import { useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../../app/hooks'
-import { Button } from '../../../shared/ui/Button'
-import { InputField } from '../../../shared/ui/InputField'
 import { Panel } from '../../../shared/ui/Panel'
-import { approveResearcher, fetchPendingResearchersPage } from '../model/adminSlice'
+import { Button } from '../../../shared/ui/Button'
+import { fetchResearchersPage } from '../model/adminSlice'
+import { ResearcherPostsModal } from './ResearcherPostsModal'
+import type { AllResearcher } from '../types/admin'
 
-export function PendingResearchersPanel() {
+export function AllResearchersPanel() {
   const dispatch = useAppDispatch()
-  const { pendingResearchers, pendingResearchersMeta, actionLoading } = useAppSelector((state) => state.admin)
-  const [notes, setNotes] = useState<Record<string, string>>({})
+  const { allResearchers, researcherMeta } = useAppSelector((state) => state.admin)
+  const [selectedResearcher, setSelectedResearcher] = useState<AllResearcher | null>(null)
 
   const handleNextPage = () => {
-    if (pendingResearchersMeta && pendingResearchersMeta.page < pendingResearchersMeta.totalPages) {
-      dispatch(fetchPendingResearchersPage(pendingResearchersMeta.page + 1))
+    if (researcherMeta && researcherMeta.page < researcherMeta.totalPages) {
+      dispatch(fetchResearchersPage(researcherMeta.page + 1))
     }
   }
 
   const handlePrevPage = () => {
-    if (pendingResearchersMeta && pendingResearchersMeta.page > 1) {
-      dispatch(fetchPendingResearchersPage(pendingResearchersMeta.page - 1))
+    if (researcherMeta && researcherMeta.page > 1) {
+      dispatch(fetchResearchersPage(researcherMeta.page - 1))
     }
   }
 
@@ -29,12 +30,14 @@ export function PendingResearchersPanel() {
           margin-top: 16px;
           overflow-x: auto;
         }
+
         .researcher-table {
           width: 100%;
           border-collapse: separate;
           border-spacing: 0;
           text-align: left;
         }
+
         .researcher-table th {
           padding: 14px 16px;
           color: var(--text-soft);
@@ -44,27 +47,46 @@ export function PendingResearchersPanel() {
           letter-spacing: 0.05em;
           border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
+
         .researcher-table td {
           padding: 16px;
           border-bottom: 1px solid rgba(255, 255, 255, 0.05);
           vertical-align: middle;
         }
+
         .table-row {
           transition: background 0.2s ease;
+          cursor: pointer;
         }
+
         .table-row:hover {
           background: rgba(255, 255, 255, 0.03);
         }
+
         .researcher-name {
           font-weight: 600;
           font-size: 1rem;
           margin-bottom: 2px;
           display: block;
         }
+
         .researcher-email {
           color: var(--text-soft);
           font-size: 0.85rem;
         }
+
+        .post-count-badge {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(183, 221, 121, 0.15);
+          color: var(--primary);
+          padding: 4px 12px;
+          border-radius: 99px;
+          font-weight: 700;
+          font-size: 0.85rem;
+        }
+        
         .pagination-controls {
           display: flex;
           justify-content: space-between;
@@ -73,6 +95,7 @@ export function PendingResearchersPanel() {
           padding-top: 16px;
           border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
+        
         .pagination-info {
           font-size: 0.9rem;
           color: var(--text-soft);
@@ -80,8 +103,8 @@ export function PendingResearchersPanel() {
       `}</style>
 
       <Panel
-        title="Pending researcher approvals"
-        description="Review and approve researcher accounts. Optional notes are stored in the approval audit."
+        title="All Researchers"
+        description="View and manage researchers. Click a row to see their submissions."
       >
         <div className="table-container">
           <table className="researcher-table">
@@ -90,20 +113,23 @@ export function PendingResearchersPanel() {
                 <th>Researcher</th>
                 <th>Joined Date</th>
                 <th>Status</th>
-                <th>Approval Note</th>
-                <th>Action</th>
+                <th>Posts</th>
               </tr>
             </thead>
             <tbody>
-              {pendingResearchers.length === 0 ? (
+              {allResearchers.length === 0 ? (
                 <tr>
-                  <td colSpan={5} style={{ textAlign: 'center', padding: '32px' }} className="empty-state">
-                    No pending researchers right now.
+                  <td colSpan={4} style={{ textAlign: 'center', padding: '32px' }} className="empty-state">
+                    No researchers found.
                   </td>
                 </tr>
               ) : (
-                pendingResearchers.map((researcher) => (
-                  <tr key={researcher.id} className="table-row">
+                allResearchers.map((researcher) => (
+                  <tr 
+                    key={researcher.id} 
+                    className="table-row"
+                    onClick={() => setSelectedResearcher(researcher)}
+                  >
                     <td>
                       <span className="researcher-name">{researcher.fullName}</span>
                       <span className="researcher-email">{researcher.email}</span>
@@ -112,36 +138,10 @@ export function PendingResearchersPanel() {
                     <td>
                       <span className="pill">{researcher.approvalStatus}</span>
                     </td>
-                    <td style={{ minWidth: '200px' }}>
-                      <InputField
-                        label=""
-                        value={notes[researcher.id] ?? ''}
-                        onChange={(event) =>
-                          setNotes((current) => ({
-                            ...current,
-                            [researcher.id]: event.target.value,
-                          }))
-                        }
-                        placeholder="Optional note"
-                        maxLength={300}
-                        hideLabel
-                      />
-                    </td>
                     <td>
-                      <Button
-                        type="button"
-                        busy={actionLoading}
-                        onClick={() =>
-                          dispatch(
-                            approveResearcher({
-                              id: researcher.id,
-                              note: notes[researcher.id] || undefined,
-                            }),
-                          )
-                        }
-                      >
-                        Approve
-                      </Button>
+                      <span className="post-count-badge">
+                        {researcher._count.submissions}
+                      </span>
                     </td>
                   </tr>
                 ))
@@ -150,23 +150,23 @@ export function PendingResearchersPanel() {
           </table>
         </div>
 
-        {pendingResearchersMeta && pendingResearchersMeta.totalPages > 1 && (
+        {researcherMeta && researcherMeta.totalPages > 1 && (
           <div className="pagination-controls">
             <span className="pagination-info">
-              Showing page {pendingResearchersMeta.page} of {pendingResearchersMeta.totalPages} ({pendingResearchersMeta.total} total)
+              Showing page {researcherMeta.page} of {researcherMeta.totalPages} ({researcherMeta.total} total)
             </span>
             <div className="row">
               <Button 
                 variant="secondary" 
                 onClick={handlePrevPage}
-                disabled={pendingResearchersMeta.page === 1}
+                disabled={researcherMeta.page === 1}
               >
                 Previous
               </Button>
               <Button 
                 variant="secondary" 
                 onClick={handleNextPage}
-                disabled={pendingResearchersMeta.page === pendingResearchersMeta.totalPages}
+                disabled={researcherMeta.page === researcherMeta.totalPages}
               >
                 Next
               </Button>
@@ -174,6 +174,12 @@ export function PendingResearchersPanel() {
           </div>
         )}
       </Panel>
+
+      <ResearcherPostsModal
+        researcher={selectedResearcher}
+        onClose={() => setSelectedResearcher(null)}
+      />
     </>
   )
 }
+

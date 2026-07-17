@@ -8,6 +8,12 @@ import type {
   PendingSubmission,
   PublishedSubmission,
   Upazila,
+  AllResearcher,
+  PaginatedResearchers,
+  PaginatedPendingResearchers,
+  PaginatedPendingSubmissions,
+  PaginatedPublishedSubmissions,
+  ResearcherSubmission,
 } from '../types/admin'
 
 export function getDivisionsRequest() {
@@ -29,8 +35,8 @@ export function getDistrictOptionsRequest() {
   return apiRequest<DistrictOption[]>('/api/admin/districts')
 }
 
-export function getPublishedSubmissionsRequest() {
-  return apiRequest<PublishedSubmission[]>('/api/admin/submissions/published')
+export function getPublishedSubmissionsRequest(page: number = 1, limit: number = 10) {
+  return apiRequest<PaginatedPublishedSubmissions>(`/api/admin/submissions/published?page=${page}&limit=${limit}`)
 }
 
 export function createSubmissionRequest(payload: CreateSubmissionPayload) {
@@ -40,8 +46,16 @@ export function createSubmissionRequest(payload: CreateSubmissionPayload) {
   })
 }
 
-export function getPendingResearchersRequest() {
-  return apiRequest<PendingResearcher[]>('/api/admin/users/pending')
+export function getAllResearchersRequest(page: number = 1, limit: number = 10) {
+  return apiRequest<PaginatedResearchers>(`/api/admin/users/researchers?page=${page}&limit=${limit}`)
+}
+
+export function getResearcherSubmissionsRequest(id: string) {
+  return apiRequest<ResearcherSubmission[]>(`/api/admin/users/${id}/submissions`)
+}
+
+export function getPendingResearchersRequest(page: number = 1, limit: number = 10) {
+  return apiRequest<PaginatedPendingResearchers>(`/api/admin/users/pending?page=${page}&limit=${limit}`)
 }
 
 export function approveResearcherRequest(id: string, note?: string) {
@@ -51,8 +65,8 @@ export function approveResearcherRequest(id: string, note?: string) {
   })
 }
 
-export function getPendingSubmissionsRequest() {
-  return apiRequest<PendingSubmission[]>('/api/admin/submissions/pending')
+export function getPendingSubmissionsRequest(page: number = 1, limit: number = 10) {
+  return apiRequest<PaginatedPendingSubmissions>(`/api/admin/submissions/pending?page=${page}&limit=${limit}`)
 }
 
 export function publishSubmissionRequest(id: string) {

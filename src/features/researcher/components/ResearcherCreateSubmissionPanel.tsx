@@ -7,6 +7,7 @@ import { SelectField } from '../../../shared/ui/SelectField'
 import {
   createResearcherSubmission,
   fetchResearcherDistricts,
+  fetchResearcherUpazilas,
 } from '../model/researcherSlice'
 
 const scoreFields = [
@@ -18,10 +19,14 @@ const scoreFields = [
 
 export function ResearcherCreateSubmissionPanel() {
   const dispatch = useAppDispatch()
-  const { divisions, districts, actionLoading } = useAppSelector((state) => state.researcher)
+  const { divisions, districts, upazilas, actionLoading } = useAppSelector(
+    (state) => state.researcher,
+  )
   const [form, setForm] = useState({
     divisionCode: '',
+    districtCode: '',
     districtSlug: '',
+    upazilaCode: '',
     climateExposure: '0.50',
     ageingIndex: '0.50',
     psychologicalStress: '0.50',
@@ -45,10 +50,23 @@ export function ResearcherCreateSubmissionPanel() {
       { label: 'Select district', value: '' },
       ...districts.map((district) => ({
         label: district.name,
-        value: district.slug,
+        value: String(district.code),
       })),
     ],
     [districts],
+  )
+
+  const upazilaOptions = useMemo(
+    () => [
+      { label: 'Optional upazila', value: '' },
+      ...(form.districtCode
+        ? upazilas.map((upazila) => ({
+            label: upazila.name,
+            value: String(upazila.code),
+          }))
+        : []),
+    ],
+    [form.districtCode, upazilas],
   )
 
   return (
@@ -63,6 +81,10 @@ export function ResearcherCreateSubmissionPanel() {
           dispatch(
             createResearcherSubmission({
               districtSlug: form.districtSlug,
+              upazilaCode: form.upazilaCode ? Number(form.upazilaCode) : undefined,
+              upazilaName: form.upazilaCode
+                ? upazilas.find((upazila) => String(upazila.code) === form.upazilaCode)?.name
+                : undefined,
               climateExposure: Number(form.climateExposure),
               ageingIndex: Number(form.ageingIndex),
               psychologicalStress: Number(form.psychologicalStress),
@@ -82,19 +104,43 @@ export function ResearcherCreateSubmissionPanel() {
               setForm((current) => ({
                 ...current,
                 divisionCode,
+                districtCode: '',
                 districtSlug: '',
+                upazilaCode: '',
               }))
               dispatch(fetchResearcherDistricts(divisionCode ? Number(divisionCode) : undefined))
             }}
           />
           <SelectField
             label="District"
-            value={form.districtSlug}
+            value={form.districtCode}
             options={districtOptions}
-            onChange={(event) =>
-              setForm((current) => ({ ...current, districtSlug: event.target.value }))
-            }
+            onChange={(event) => {
+              const districtCode = event.target.value
+              const selectedDistrict = districts.find(
+                (district) => String(district.code) === districtCode,
+              )
+
+              setForm((current) => ({
+                ...current,
+                districtCode,
+                districtSlug: selectedDistrict?.slug ?? '',
+                upazilaCode: '',
+              }))
+
+              if (districtCode) {
+                dispatch(fetchResearcherUpazilas(Number(districtCode)))
+              }
+            }}
             required
+          />
+          <SelectField
+            label="Upazila"
+            value={form.upazilaCode}
+            options={upazilaOptions}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, upazilaCode: event.target.value }))
+            }
           />
         </div>
 

@@ -6,6 +6,7 @@ import {
   getDistrictOptionsRequest,
   getDivisionsRequest,
   getHierarchyDistrictsRequest,
+  getAllResearchersRequest,
   getPendingResearchersRequest,
   getPendingSubmissionsRequest,
   getPublishedSubmissionsRequest,
@@ -22,6 +23,8 @@ import type {
   PendingSubmission,
   PublishedSubmission,
   Upazila,
+  AllResearcher,
+  PaginationMeta,
 } from '../types/admin'
 
 type AdminState = {
@@ -29,9 +32,14 @@ type AdminState = {
   hierarchyDistricts: HierarchyDistrict[]
   upazilas: Upazila[]
   districtOptions: DistrictOption[]
+  allResearchers: AllResearcher[]
+  researcherMeta: PaginationMeta | null
   pendingResearchers: PendingResearcher[]
+  pendingResearchersMeta: PaginationMeta | null
   pendingSubmissions: PendingSubmission[]
+  pendingSubmissionsMeta: PaginationMeta | null
   publishedSubmissions: PublishedSubmission[]
+  publishedSubmissionsMeta: PaginationMeta | null
   loading: boolean
   actionLoading: boolean
   error: string | null
@@ -43,9 +51,14 @@ const initialState: AdminState = {
   hierarchyDistricts: [],
   upazilas: [],
   districtOptions: [],
+  allResearchers: [],
+  researcherMeta: null,
   pendingResearchers: [],
+  pendingResearchersMeta: null,
   pendingSubmissions: [],
+  pendingSubmissionsMeta: null,
   publishedSubmissions: [],
+  publishedSubmissionsMeta: null,
   loading: false,
   actionLoading: false,
   error: null,
@@ -58,12 +71,14 @@ export const fetchDashboardData = createAsyncThunk(
     const [
       divisions,
       districtOptions,
+      allResearchers,
       pendingResearchers,
       pendingSubmissions,
       publishedSubmissions,
     ] = await Promise.all([
       getDivisionsRequest(),
       getDistrictOptionsRequest(),
+      getAllResearchersRequest(),
       getPendingResearchersRequest(),
       getPendingSubmissionsRequest(),
       getPublishedSubmissionsRequest(),
@@ -72,11 +87,36 @@ export const fetchDashboardData = createAsyncThunk(
     return {
       divisions,
       districtOptions,
-      pendingResearchers,
-      pendingSubmissions,
-      publishedSubmissions,
+      allResearchers: allResearchers.data,
+      researcherMeta: allResearchers.meta,
+      pendingResearchers: pendingResearchers.data,
+      pendingResearchersMeta: pendingResearchers.meta,
+      pendingSubmissions: pendingSubmissions.data,
+      pendingSubmissionsMeta: pendingSubmissions.meta,
+      publishedSubmissions: publishedSubmissions.data,
+      publishedSubmissionsMeta: publishedSubmissions.meta,
     }
   },
+)
+
+export const fetchResearchersPage = createAsyncThunk(
+  'admin/fetchResearchersPage',
+  async (page: number) => getAllResearchersRequest(page)
+)
+
+export const fetchPendingResearchersPage = createAsyncThunk(
+  'admin/fetchPendingResearchersPage',
+  async (page: number) => getPendingResearchersRequest(page)
+)
+
+export const fetchPendingSubmissionsPage = createAsyncThunk(
+  'admin/fetchPendingSubmissionsPage',
+  async (page: number) => getPendingSubmissionsRequest(page)
+)
+
+export const fetchPublishedSubmissionsPage = createAsyncThunk(
+  'admin/fetchPublishedSubmissionsPage',
+  async (page: number) => getPublishedSubmissionsRequest(page)
 )
 
 export const fetchHierarchyDistricts = createAsyncThunk(
@@ -144,13 +184,46 @@ const adminSlice = createSlice({
         state.loading = false
         state.divisions = action.payload.divisions
         state.districtOptions = action.payload.districtOptions
+        state.allResearchers = action.payload.allResearchers
+        state.researcherMeta = action.payload.researcherMeta
         state.pendingResearchers = action.payload.pendingResearchers
+        state.pendingResearchersMeta = action.payload.pendingResearchersMeta
         state.pendingSubmissions = action.payload.pendingSubmissions
+        state.pendingSubmissionsMeta = action.payload.pendingSubmissionsMeta
         state.publishedSubmissions = action.payload.publishedSubmissions
+        state.publishedSubmissionsMeta = action.payload.publishedSubmissionsMeta
       })
       .addCase(fetchDashboardData.rejected, (state, action) => {
         state.loading = false
         state.error = action.error.message ?? 'Unable to load dashboard data.'
+      })
+      .addCase(fetchResearchersPage.fulfilled, (state, action) => {
+        state.allResearchers = action.payload.data
+        state.researcherMeta = action.payload.meta
+      })
+      .addCase(fetchResearchersPage.rejected, (state, action) => {
+        state.error = action.error.message ?? 'Unable to load researchers page.'
+      })
+      .addCase(fetchPendingResearchersPage.fulfilled, (state, action) => {
+        state.pendingResearchers = action.payload.data
+        state.pendingResearchersMeta = action.payload.meta
+      })
+      .addCase(fetchPendingResearchersPage.rejected, (state, action) => {
+        state.error = action.error.message ?? 'Unable to load pending researchers page.'
+      })
+      .addCase(fetchPendingSubmissionsPage.fulfilled, (state, action) => {
+        state.pendingSubmissions = action.payload.data
+        state.pendingSubmissionsMeta = action.payload.meta
+      })
+      .addCase(fetchPendingSubmissionsPage.rejected, (state, action) => {
+        state.error = action.error.message ?? 'Unable to load pending submissions page.'
+      })
+      .addCase(fetchPublishedSubmissionsPage.fulfilled, (state, action) => {
+        state.publishedSubmissions = action.payload.data
+        state.publishedSubmissionsMeta = action.payload.meta
+      })
+      .addCase(fetchPublishedSubmissionsPage.rejected, (state, action) => {
+        state.error = action.error.message ?? 'Unable to load published submissions page.'
       })
       .addCase(fetchHierarchyDistricts.fulfilled, (state, action) => {
         state.hierarchyDistricts = action.payload
@@ -169,6 +242,10 @@ const adminSlice = createSlice({
           action.type.startsWith('admin/') &&
           action.type.endsWith('/pending') &&
           !action.type.includes('fetchDashboardData') &&
+          !action.type.includes('fetchResearchersPage') &&
+          !action.type.includes('fetchPendingResearchersPage') &&
+          !action.type.includes('fetchPendingSubmissionsPage') &&
+          !action.type.includes('fetchPublishedSubmissionsPage') &&
           !action.type.includes('fetchHierarchyDistricts') &&
           !action.type.includes('fetchUpazilas'),
         (state) => {
@@ -182,6 +259,10 @@ const adminSlice = createSlice({
           action.type.startsWith('admin/') &&
           action.type.endsWith('/fulfilled') &&
           !action.type.includes('fetchDashboardData') &&
+          !action.type.includes('fetchResearchersPage') &&
+          !action.type.includes('fetchPendingResearchersPage') &&
+          !action.type.includes('fetchPendingSubmissionsPage') &&
+          !action.type.includes('fetchPublishedSubmissionsPage') &&
           !action.type.includes('fetchHierarchyDistricts') &&
           !action.type.includes('fetchUpazilas'),
         (state, action: AnyAction) => {
@@ -194,6 +275,10 @@ const adminSlice = createSlice({
           action.type.startsWith('admin/') &&
           action.type.endsWith('/rejected') &&
           !action.type.includes('fetchDashboardData') &&
+          !action.type.includes('fetchResearchersPage') &&
+          !action.type.includes('fetchPendingResearchersPage') &&
+          !action.type.includes('fetchPendingSubmissionsPage') &&
+          !action.type.includes('fetchPublishedSubmissionsPage') &&
           !action.type.includes('fetchHierarchyDistricts') &&
           !action.type.includes('fetchUpazilas'),
         (state, action: AnyAction) => {

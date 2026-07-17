@@ -40,6 +40,8 @@ export type ResearcherDashboard = {
 
 export type ResearcherCreateSubmissionPayload = {
   districtSlug: string
+  upazilaCode?: number
+  upazilaName?: string
   climateExposure: number
   ageingIndex: number
   psychologicalStress: number

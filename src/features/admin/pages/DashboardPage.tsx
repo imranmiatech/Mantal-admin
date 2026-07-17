@@ -4,6 +4,7 @@ import { StatusMessage } from '../../../shared/ui/StatusMessage'
 import { CreateSubmissionPanel } from '../components/CreateSubmissionPanel'
 import { DashboardLayout } from '../components/DashboardLayout'
 import { PendingResearchersPanel } from '../components/PendingResearchersPanel'
+import { AllResearchersPanel } from '../components/AllResearchersPanel'
 import { PendingSubmissionsPanel } from '../components/PendingSubmissionsPanel'
 import { PublishedSubmissionsPanel } from '../components/PublishedSubmissionsPanel'
 import { StatsGrid } from '../components/StatsGrid'
@@ -13,6 +14,7 @@ import {
   fetchResearcherDashboard,
 } from '../../researcher/model/researcherSlice'
 import { ResearcherCreateSubmissionPanel } from '../../researcher/components/ResearcherCreateSubmissionPanel'
+import { ResearcherBulkSubmissionPanel } from '../../researcher/components/ResearcherBulkSubmissionPanel'
 import { ResearcherSubmissionsPanel } from '../../researcher/components/ResearcherSubmissionsPanel'
 
 export function DashboardPage() {
@@ -39,7 +41,7 @@ export function DashboardPage() {
     { label: 'Pending researchers', value: admin.pendingResearchers.length },
     { label: 'Pending submissions', value: admin.pendingSubmissions.length },
     { label: 'Published submissions', value: admin.publishedSubmissions.length },
-    { label: 'District options', value: admin.districtOptions.length },
+    { label: 'Total researchers', value: admin.allResearchers.length },
   ]
 
   const researcherStats = [
@@ -79,12 +81,14 @@ export function DashboardPage() {
             <>
               <CreateSubmissionPanel />
               <PendingResearchersPanel />
+              <AllResearchersPanel />
               <PendingSubmissionsPanel />
               <PublishedSubmissionsPanel />
             </>
           ) : (
             <>
               <ResearcherCreateSubmissionPanel />
+              <ResearcherBulkSubmissionPanel />
               <ResearcherSubmissionsPanel />
             </>
           )}
