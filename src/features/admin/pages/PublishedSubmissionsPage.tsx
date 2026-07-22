@@ -6,13 +6,12 @@ import { fetchPublishedSubmissionsPage, clearAdminFeedback } from '../model/admi
 
 export default function PublishedSubmissionsPage() {
   const dispatch = useAppDispatch()
-  const user = useAppSelector((s) => s.auth.user)
-  const isAdmin = user?.role === 'ADMIN'
+  const isSignedIn = useAppSelector((s) => Boolean(s.auth.user))
 
   useEffect(() => {
-    if (isAdmin) dispatch(fetchPublishedSubmissionsPage(1))
+    if (isSignedIn) dispatch(fetchPublishedSubmissionsPage(1))
     return () => void dispatch(clearAdminFeedback())
-  }, [dispatch, isAdmin])
+  }, [dispatch, isSignedIn])
 
   return (
     <DashboardLayout>

@@ -77,17 +77,21 @@ export function DashboardPage() {
                 <p className="mt-1.5 text-sm text-slate-500 sm:mt-2">Quickly create a new submission</p>
               </Link>
 
-              <Link to="/dashboard/pending-researchers" className="glass-panel cursor-pointer rounded-2xl p-4 transition hover:scale-[1.01] sm:p-6">
-                <p className="text-sm text-slate-500">Review</p>
-                <h4 className="mt-1.5 text-lg font-bold sm:mt-2 sm:text-xl">Pending Researchers</h4>
-                <p className="mt-1.5 text-sm text-slate-500 sm:mt-2">Approve or reject researcher requests</p>
-              </Link>
+              {isAdmin ? (
+                <Link to="/dashboard/pending-researchers" className="glass-panel cursor-pointer rounded-2xl p-4 transition hover:scale-[1.01] sm:p-6">
+                  <p className="text-sm text-slate-500">Review</p>
+                  <h4 className="mt-1.5 text-lg font-bold sm:mt-2 sm:text-xl">Pending Researchers</h4>
+                  <p className="mt-1.5 text-sm text-slate-500 sm:mt-2">Approve or reject researcher requests</p>
+                </Link>
+              ) : null}
 
-              <Link to="/dashboard/pending-submissions" className="glass-panel cursor-pointer rounded-2xl p-4 transition hover:scale-[1.01] sm:p-6">
-                <p className="text-sm text-slate-500">Moderate</p>
-                <h4 className="mt-1.5 text-lg font-bold sm:mt-2 sm:text-xl">Pending Submissions</h4>
-                <p className="mt-1.5 text-sm text-slate-500 sm:mt-2">Review submissions awaiting approval</p>
-              </Link>
+              {isAdmin ? (
+                <Link to="/dashboard/pending-submissions" className="glass-panel cursor-pointer rounded-2xl p-4 transition hover:scale-[1.01] sm:p-6">
+                  <p className="text-sm text-slate-500">Moderate</p>
+                  <h4 className="mt-1.5 text-lg font-bold sm:mt-2 sm:text-xl">Pending Submissions</h4>
+                  <p className="mt-1.5 text-sm text-slate-500 sm:mt-2">Review admin drafts awaiting publish</p>
+                </Link>
+              ) : null}
 
               <Link to="/dashboard/published" className="glass-panel cursor-pointer rounded-2xl p-4 transition hover:scale-[1.01] sm:p-6">
                 <p className="text-sm text-slate-500">View</p>
@@ -95,11 +99,13 @@ export function DashboardPage() {
                 <p className="mt-1.5 text-sm text-slate-500 sm:mt-2">Browse published content</p>
               </Link>
 
-              <Link to="/dashboard/researchers" className="glass-panel cursor-pointer rounded-2xl p-4 transition hover:scale-[1.01] sm:p-6">
-                <p className="text-sm text-slate-500">Manage</p>
-                <h4 className="mt-1.5 text-lg font-bold sm:mt-2 sm:text-xl">All Researchers</h4>
-                <p className="mt-1.5 text-sm text-slate-500 sm:mt-2">View and search all researchers</p>
-              </Link>
+              {isAdmin ? (
+                <Link to="/dashboard/researchers" className="glass-panel cursor-pointer rounded-2xl p-4 transition hover:scale-[1.01] sm:p-6">
+                  <p className="text-sm text-slate-500">Manage</p>
+                  <h4 className="mt-1.5 text-lg font-bold sm:mt-2 sm:text-xl">All Researchers</h4>
+                  <p className="mt-1.5 text-sm text-slate-500 sm:mt-2">View and search all researchers</p>
+                </Link>
+              ) : null}
             </div>
           </div>
         )}

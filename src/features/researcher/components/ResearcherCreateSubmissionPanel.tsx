@@ -17,22 +17,24 @@ const scoreFields = [
   { key: 'adaptabilityCapacity', label: 'Adaptability capacity' },
 ] as const
 
+const initialForm = {
+  divisionCode: '',
+  districtCode: '',
+  districtSlug: '',
+  upazilaCode: '',
+  climateExposure: '0.50',
+  ageingIndex: '0.50',
+  psychologicalStress: '0.50',
+  adaptabilityCapacity: '0.50',
+  narrative: '',
+}
+
 export function ResearcherCreateSubmissionPanel() {
   const dispatch = useAppDispatch()
   const { divisions, districts, upazilas, actionLoading } = useAppSelector(
     (state) => state.researcher,
   )
-  const [form, setForm] = useState({
-    divisionCode: '',
-    districtCode: '',
-    districtSlug: '',
-    upazilaCode: '',
-    climateExposure: '0.50',
-    ageingIndex: '0.50',
-    psychologicalStress: '0.50',
-    adaptabilityCapacity: '0.50',
-    narrative: '',
-  })
+  const [form, setForm] = useState(initialForm)
 
   const divisionOptions = useMemo(
     () => [
@@ -72,13 +74,13 @@ export function ResearcherCreateSubmissionPanel() {
   return (
     <Panel
       title="Create researcher submission"
-      description="Submit district risk data for admin review. Researcher submissions stay pending until an admin publishes them."
+      description="Post district risk data directly. Researcher submissions are published immediately."
     >
       <form
         className="flex w-full flex-col gap-4 sm:gap-6"
-        onSubmit={(event) => {
+        onSubmit={async (event) => {
           event.preventDefault()
-          dispatch(
+          await dispatch(
             createResearcherSubmission({
               districtSlug: form.districtSlug,
               upazilaCode: form.upazilaCode ? Number(form.upazilaCode) : undefined,
@@ -91,7 +93,8 @@ export function ResearcherCreateSubmissionPanel() {
               adaptabilityCapacity: Number(form.adaptabilityCapacity),
               narrative: form.narrative,
             }),
-          )
+          ).unwrap()
+          setForm(initialForm)
         }}
       >
         <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-6">
@@ -176,7 +179,7 @@ export function ResearcherCreateSubmissionPanel() {
         />
 
         <Button type="submit" busy={actionLoading} className="w-full sm:w-fit">
-          Send for review
+          Publish submission
         </Button>
       </form>
     </Panel>

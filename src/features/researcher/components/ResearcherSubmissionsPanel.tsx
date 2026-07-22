@@ -7,7 +7,7 @@ export function ResearcherSubmissionsPanel() {
   return (
     <Panel
       title="My submissions"
-      description="Track every submission you have created and see whether it is pending, published, or rejected."
+      description="Track every submission you have created. New researcher submissions are published immediately."
     >
       <div className="flex w-full flex-col gap-3 sm:gap-4">
         {submissions.length === 0 ? (

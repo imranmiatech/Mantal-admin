@@ -51,7 +51,7 @@ function App() {
         <Route
           path="/dashboard/pending-researchers"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['ADMIN']}>
               <PendingResearchersPage />
             </ProtectedRoute>
           }
@@ -59,7 +59,7 @@ function App() {
         <Route
           path="/dashboard/pending-submissions"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['ADMIN']}>
               <PendingSubmissionsPage />
             </ProtectedRoute>
           }
@@ -75,7 +75,7 @@ function App() {
         <Route
           path="/dashboard/researchers"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['ADMIN']}>
               <AllResearchersPage />
             </ProtectedRoute>
           }

@@ -13,22 +13,24 @@ const scoreFields = [
   { key: 'adaptabilityCapacity', label: 'Adaptability capacity' },
 ] as const
 
+const initialForm = {
+  divisionCode: '',
+  districtCode: '',
+  districtSlug: '',
+  upazilaCode: '',
+  narrative: '',
+  publishNow: true,
+  climateExposure: '0.50',
+  ageingIndex: '0.50',
+  psychologicalStress: '0.50',
+  adaptabilityCapacity: '0.50',
+}
+
 export function CreateSubmissionPanel() {
   const dispatch = useAppDispatch()
   const { divisions, hierarchyDistricts, upazilas, districtOptions, actionLoading } =
     useAppSelector((state) => state.admin)
-  const [form, setForm] = useState({
-    divisionCode: '',
-    districtCode: '',
-    districtSlug: '',
-    upazilaCode: '',
-    narrative: '',
-    publishNow: true,
-    climateExposure: '0.50',
-    ageingIndex: '0.50',
-    psychologicalStress: '0.50',
-    adaptabilityCapacity: '0.50',
-  })
+  const [form, setForm] = useState(initialForm)
 
   useEffect(() => {
     dispatch(clearAdminFeedback())
@@ -83,10 +85,10 @@ export function CreateSubmissionPanel() {
     >
       <form
         className="flex flex-col gap-4 sm:gap-6"
-        onSubmit={(event) => {
+        onSubmit={async (event) => {
           event.preventDefault()
 
-          dispatch(
+          await dispatch(
             createSubmission({
               districtSlug: form.districtSlug,
               upazilaCode: form.upazilaCode ? Number(form.upazilaCode) : undefined,
@@ -101,7 +103,8 @@ export function CreateSubmissionPanel() {
               narrative: form.narrative,
               publishNow: form.publishNow,
             }),
-          )
+          ).unwrap()
+          setForm(initialForm)
         }}
       >
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-6">

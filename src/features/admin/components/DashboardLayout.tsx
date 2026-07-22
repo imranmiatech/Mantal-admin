@@ -1,7 +1,10 @@
-import type { ReactNode } from 'react'
+import { useCallback, useEffect, type ReactNode } from 'react'
 import { useAppDispatch, useAppSelector } from '../../../app/hooks'
 import { Button } from '../../../shared/ui/Button'
+import { Toast } from '../../../shared/ui/Toast'
 import { signOut } from '../../auth/model/authSlice'
+import { clearResearcherFeedback } from '../../researcher/model/researcherSlice'
+import { clearAdminFeedback } from '../model/adminSlice'
 import { Sidebar } from './Sidebar'
 
 type DashboardLayoutProps = {
@@ -11,10 +14,41 @@ type DashboardLayoutProps = {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const dispatch = useAppDispatch()
   const user = useAppSelector((state) => state.auth.user)
+  const adminFeedback = useAppSelector((state) => ({
+    error: state.admin.error,
+    successMessage: state.admin.successMessage,
+  }))
+  const researcherFeedback = useAppSelector((state) => ({
+    error: state.researcher.error,
+    successMessage: state.researcher.successMessage,
+  }))
   const isAdmin = user?.role === 'ADMIN'
+  const activeFeedback = isAdmin ? adminFeedback : researcherFeedback
+  const toastMessage = activeFeedback.error ?? activeFeedback.successMessage
+  const toastTone = activeFeedback.error ? 'error' : 'success'
+
+  const clearFeedback = useCallback(() => {
+    if (isAdmin) {
+      dispatch(clearAdminFeedback())
+      return
+    }
+
+    dispatch(clearResearcherFeedback())
+  }, [dispatch, isAdmin])
+
+  useEffect(() => {
+    if (!toastMessage) return
+
+    const timer = window.setTimeout(clearFeedback, 3500)
+    return () => window.clearTimeout(timer)
+  }, [toastMessage, clearFeedback])
 
   return (
     <div className="min-h-screen w-full overflow-x-hidden">
+      <div className="pointer-events-none fixed right-4 top-4 z-[10000] sm:right-6 sm:top-6">
+        <Toast tone={toastTone} message={toastMessage} onClose={clearFeedback} />
+      </div>
+
       {/* Sticky Top Header */}
       <header className="sticky top-0 z-40 backdrop-blur-3xl bg-white/70 border-b border-slate-200/80 px-3 py-2.5 sm:px-8 sm:py-4 lg:px-12">
         <div className="flex w-full flex-col justify-between gap-2.5 sm:flex-row sm:items-center">

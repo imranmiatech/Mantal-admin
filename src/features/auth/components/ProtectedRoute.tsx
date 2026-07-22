@@ -3,12 +3,14 @@ import type { ReactNode } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../../app/hooks'
 import { loadCurrentUser } from '../model/authSlice'
+import type { Role } from '../types/auth'
 
 type ProtectedRouteProps = {
   children: ReactNode
+  allowedRoles?: Role[]
 }
 
-export function ProtectedRoute({ children }: ProtectedRouteProps) {
+export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
   const dispatch = useAppDispatch()
   const location = useLocation()
   const { token, user, initialized, status } = useAppSelector((state) => state.auth)
@@ -37,6 +39,10 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
         Checking your dashboard session...
       </div>
     )
+  }
+
+  if (allowedRoles?.length && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/unauthorized" replace />
   }
 
   return <>{children}</>

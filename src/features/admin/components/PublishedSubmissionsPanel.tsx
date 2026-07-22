@@ -45,7 +45,7 @@ export function PublishedSubmissionsPanel() {
     <>
       <Panel
         title="Published submissions"
-        description="Live district and upazila records already exposed through the admin published endpoint."
+        description="Live district and upazila records already published for the dashboard."
       >
         <div className="responsive-table-wrap">
           <table className="responsive-table min-w-[700px]">

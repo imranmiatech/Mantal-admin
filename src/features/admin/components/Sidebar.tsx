@@ -1,21 +1,31 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useAppSelector } from '../../../app/hooks'
+import type { Role } from '../../auth/types/auth'
 
-const navItems = [
+type NavItem = {
+  to: string
+  label: string
+  roles?: Role[]
+}
+
+const navItems: NavItem[] = [
   { to: '/dashboard', label: 'Overview' },
   { to: '/dashboard/create', label: 'Create Submission' },
-  { to: '/dashboard/pending-researchers', label: 'Pending Researchers' },
-  { to: '/dashboard/pending-submissions', label: 'Pending Submissions' },
+  { to: '/dashboard/pending-researchers', label: 'Pending Researchers', roles: ['ADMIN'] },
+  { to: '/dashboard/pending-submissions', label: 'Pending Submissions', roles: ['ADMIN'] },
   { to: '/dashboard/published', label: 'Published Submissions' },
-  { to: '/dashboard/researchers', label: 'All Researchers' },
-]
+  { to: '/dashboard/researchers', label: 'All Researchers', roles: ['ADMIN'] },
+] satisfies Array<{ to: string; label: string; roles?: Role[] }>
 
 export function Sidebar() {
   const [open, setOpen] = useState(true)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const role = useAppSelector((state) => state.auth.user?.role)
   const navigate = useNavigate()
   const loc = useLocation()
   const currentHash = loc.hash ? loc.hash.replace('#', '') : ''
+  const visibleNavItems = navItems.filter((item) => !item.roles || (role && item.roles.includes(role)))
 
   useEffect(() => {
     function onOpen() {
@@ -54,7 +64,7 @@ export function Sidebar() {
         </div>
 
         <nav className="flex flex-col gap-2">
-          {navItems.map((it) => {
+          {visibleNavItems.map((it) => {
             const [, hash] = it.to.split('#')
             const active = loc.pathname === it.to.split('#')[0] && (hash ? currentHash === hash : loc.hash === '')
             return (
@@ -80,7 +90,7 @@ export function Sidebar() {
                 <button onClick={() => setMobileOpen(false)} className="cursor-pointer text-slate-600">Close</button>
               </div>
               <nav className="flex flex-col gap-2">
-                {navItems.map((it) => (
+                {visibleNavItems.map((it) => (
                   <button
                     key={it.to}
                     onClick={() => {
