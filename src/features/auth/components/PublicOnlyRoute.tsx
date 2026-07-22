@@ -19,7 +19,11 @@ export function PublicOnlyRoute({ children }: PublicOnlyRouteProps) {
   }, [dispatch, status, token, user])
 
   if (token && !initialized) {
-    return <div className="shell shell--center">Restoring your session...</div>
+    return (
+      <div className="flex min-h-screen w-full items-center justify-center bg-slate-50 px-4 text-sm font-semibold text-slate-500">
+        Restoring your session...
+      </div>
+    )
   }
 
   if (user) {

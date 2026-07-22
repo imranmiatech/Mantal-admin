@@ -35,7 +35,7 @@ export function CreateSubmissionPanel() {
   }, [dispatch])
 
   useEffect(() => {
-    dispatch(fetchHierarchyDistricts())
+    dispatch(fetchHierarchyDistricts(undefined))
   }, [dispatch])
 
   const divisionOptions = useMemo(
@@ -82,7 +82,7 @@ export function CreateSubmissionPanel() {
       description="Post district risk data directly from the admin dashboard. All four scores must stay between 0 and 1."
     >
       <form
-        className="stack"
+        className="flex flex-col gap-4 sm:gap-6"
         onSubmit={(event) => {
           event.preventDefault()
 
@@ -104,7 +104,7 @@ export function CreateSubmissionPanel() {
           )
         }}
       >
-        <div className="grid grid--3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-6">
           <SelectField
             label="Division"
             value={form.divisionCode}
@@ -157,7 +157,7 @@ export function CreateSubmissionPanel() {
           />
         </div>
 
-        <div className="grid grid--4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-4 sm:gap-6">
           {scoreFields.map((field) => (
             <InputField
               key={field.key}
@@ -188,20 +188,26 @@ export function CreateSubmissionPanel() {
           required
         />
 
-        <label className="toggle">
-          <input
-            type="checkbox"
-            checked={form.publishNow}
-            onChange={(event) =>
-              setForm((current) => ({ ...current, publishNow: event.target.checked }))
-            }
-          />
-          <span>Publish immediately</span>
+        <label className="flex w-full items-center gap-3 cursor-pointer group sm:w-fit">
+          <div className="relative flex items-center justify-center">
+            <input
+              type="checkbox"
+              className="appearance-none w-6 h-6 rounded border border-slate-300 bg-white checked:bg-emerald-500 checked:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all peer cursor-pointer"
+              checked={form.publishNow}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, publishNow: event.target.checked }))
+              }
+            />
+            <svg className="absolute w-4 h-4 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </div>
+          <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900 transition-colors">Publish immediately</span>
         </label>
 
-        <Button type="submit" busy={actionLoading}>
-          Save submission
-        </Button>
+        <div className="pt-2">
+          <Button type="submit" busy={actionLoading} className="w-full sm:w-fit">
+            Save submission
+          </Button>
+        </div>
       </form>
     </Panel>
   )

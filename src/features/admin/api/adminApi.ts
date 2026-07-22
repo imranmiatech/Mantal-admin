@@ -4,10 +4,12 @@ import type {
   DistrictOption,
   Division,
   HierarchyDistrict,
-  PendingResearcher,
-  PendingSubmission,
-  PublishedSubmission,
   Upazila,
+  PaginatedResearchers,
+  PaginatedPendingResearchers,
+  PaginatedPendingSubmissions,
+  PaginatedPublishedSubmissions,
+  ResearcherSubmission,
 } from '../types/admin'
 
 export function getDivisionsRequest() {
@@ -29,8 +31,8 @@ export function getDistrictOptionsRequest() {
   return apiRequest<DistrictOption[]>('/api/admin/districts')
 }
 
-export function getPublishedSubmissionsRequest() {
-  return apiRequest<PublishedSubmission[]>('/api/admin/submissions/published')
+export function getPublishedSubmissionsRequest(page: number = 1, limit: number = 10) {
+  return apiRequest<PaginatedPublishedSubmissions>(`/api/admin/submissions/published?page=${page}&limit=${limit}`)
 }
 
 export function createSubmissionRequest(payload: CreateSubmissionPayload) {
@@ -40,8 +42,17 @@ export function createSubmissionRequest(payload: CreateSubmissionPayload) {
   })
 }
 
-export function getPendingResearchersRequest() {
-  return apiRequest<PendingResearcher[]>('/api/admin/users/pending')
+export function getAllResearchersRequest(page: number = 1, limit: number = 5, search?: string) {
+  const searchQuery = search ? `&search=${encodeURIComponent(search)}` : ''
+  return apiRequest<PaginatedResearchers>(`/api/admin/users/researchers?page=${page}&limit=${limit}${searchQuery}`)
+}
+
+export function getResearcherSubmissionsRequest(id: string) {
+  return apiRequest<ResearcherSubmission[]>(`/api/admin/users/${id}/submissions`)
+}
+
+export function getPendingResearchersRequest(page: number = 1, limit: number = 10) {
+  return apiRequest<PaginatedPendingResearchers>(`/api/admin/users/pending?page=${page}&limit=${limit}`)
 }
 
 export function approveResearcherRequest(id: string, note?: string) {
@@ -51,8 +62,8 @@ export function approveResearcherRequest(id: string, note?: string) {
   })
 }
 
-export function getPendingSubmissionsRequest() {
-  return apiRequest<PendingSubmission[]>('/api/admin/submissions/pending')
+export function getPendingSubmissionsRequest(page: number = 1, limit: number = 10) {
+  return apiRequest<PaginatedPendingSubmissions>(`/api/admin/submissions/pending?page=${page}&limit=${limit}`)
 }
 
 export function publishSubmissionRequest(id: string) {
@@ -66,5 +77,17 @@ export function rejectSubmissionRequest(id: string) {
   return apiRequest(`/api/admin/submissions/${id}/reject`, {
     method: 'PATCH',
     body: {},
+  })
+}
+
+export function deleteResearcherRequest(id: string) {
+  return apiRequest(`/api/admin/researchers/${id}`, {
+    method: 'DELETE',
+  })
+}
+
+export function deletePostRequest(id: string) {
+  return apiRequest(`/api/admin/posts/${id}`, {
+    method: 'DELETE',
   })
 }

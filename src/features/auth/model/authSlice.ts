@@ -23,21 +23,64 @@ const initialState: AuthState = {
   signUpMessage: null,
 }
 
+function getResearcherApprovalError(user: AuthUser) {
+  if (user.role !== 'RESEARCHER') {
+    return null
+  }
+
+  if (user.approvalStatus === 'PENDING') {
+    return 'Your researcher account is still pending admin approval. You will be able to sign in after approval.'
+  }
+
+  if (user.approvalStatus === 'REJECTED') {
+    return 'Your researcher account was not approved. Please contact an admin before trying again.'
+  }
+
+  return null
+}
+
 export const signIn = createAsyncThunk(
   'auth/signIn',
-  async (payload: LoginPayload) => signInRequest(payload),
+  async (payload: LoginPayload, { rejectWithValue }) => {
+    try {
+      const response = await signInRequest(payload)
+      const approvalError = getResearcherApprovalError(response.user)
+
+      if (approvalError) {
+        return rejectWithValue(approvalError)
+      }
+
+      return response
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Unable to sign in.')
+    }
+  },
 )
 
 export const signUp = createAsyncThunk(
   'auth/signUp',
-  async (payload: SignupPayload) => signUpRequest(payload),
+  async (payload: SignupPayload, { rejectWithValue }) => {
+    try {
+      return await signUpRequest(payload)
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Unable to sign up.')
+    }
+  },
 )
 
 export const loadCurrentUser = createAsyncThunk(
   'auth/loadCurrentUser',
   async (_, { rejectWithValue }) => {
     try {
-      return await getProfileRequest()
+      const user = await getProfileRequest()
+      const approvalError = getResearcherApprovalError(user)
+
+      if (approvalError) {
+        clearStoredToken()
+        return rejectWithValue(approvalError)
+      }
+
+      return user
     } catch (error) {
       clearStoredToken()
       return rejectWithValue(error instanceof Error ? error.message : 'Session expired.')
@@ -78,7 +121,9 @@ const authSlice = createSlice({
       .addCase(signIn.rejected, (state, action) => {
         state.status = 'idle'
         state.initialized = true
-        state.error = action.error.message ?? 'Unable to sign in.'
+        state.token = null
+        state.user = null
+        state.error = (action.payload as string) ?? action.error.message ?? 'Unable to sign in.'
       })
       .addCase(signUp.pending, (state) => {
         state.signUpStatus = 'loading'
@@ -91,7 +136,7 @@ const authSlice = createSlice({
       })
       .addCase(signUp.rejected, (state, action) => {
         state.signUpStatus = 'idle'
-        state.error = action.error.message ?? 'Unable to sign up.'
+        state.error = (action.payload as string) ?? action.error.message ?? 'Unable to sign up.'
       })
       .addCase(loadCurrentUser.pending, (state) => {
         state.status = state.token ? 'loading' : 'idle'

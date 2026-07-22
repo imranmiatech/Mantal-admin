@@ -27,18 +27,22 @@ export function InputField({
   as = 'input',
   ...props
 }: FieldProps) {
+  const labelClass = "block text-sm font-medium text-slate-700 tracking-wide"
+  const hintClass = "block text-xs text-slate-500 mt-1.5"
+  const errorClass = "block text-xs text-rose-500 mt-1.5 font-medium"
+
   if (as === 'textarea') {
     const textareaProps = props as TextareaProps
 
     return (
       <label className={`block space-y-2 ${className}`.trim()}>
-        <span className="block text-sm font-medium text-white/78">{label}</span>
+        <span className={labelClass}>{label}</span>
         <textarea
-          className="min-h-32 w-full rounded-2xl border border-white/12 bg-white/6 px-4 py-3 text-white outline-none transition placeholder:text-white/28 focus:border-lime-300/50 focus:bg-white/8 focus:ring-4 focus:ring-lime-300/10"
+          className="glass-input min-h-[140px] w-full rounded-xl px-4 py-3 outline-none transition-all duration-200 resize-y"
           {...textareaProps}
         />
-        {hint ? <span className="block text-xs text-white/45">{hint}</span> : null}
-        {error ? <span className="block text-xs text-rose-300">{error}</span> : null}
+        {hint ? <span className={hintClass}>{hint}</span> : null}
+        {error ? <span className={errorClass}>{error}</span> : null}
       </label>
     )
   }
@@ -47,13 +51,13 @@ export function InputField({
 
   return (
     <label className={`block space-y-2 ${className}`.trim()}>
-      <span className="block text-sm font-medium text-white/78">{label}</span>
+      <span className={labelClass}>{label}</span>
       <input
-        className="h-13 w-full rounded-2xl border border-white/12 bg-white/6 px-4 text-white outline-none transition placeholder:text-white/28 focus:border-lime-300/50 focus:bg-white/8 focus:ring-4 focus:ring-lime-300/10"
+        className="glass-input h-12 w-full rounded-xl px-4 outline-none transition-all duration-200"
         {...inputProps}
       />
-      {hint ? <span className="block text-xs text-white/45">{hint}</span> : null}
-      {error ? <span className="block text-xs text-rose-300">{error}</span> : null}
+      {hint ? <span className={hintClass}>{hint}</span> : null}
+      {error ? <span className={errorClass}>{error}</span> : null}
     </label>
   )
 }

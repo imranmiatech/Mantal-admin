@@ -34,6 +34,44 @@ export type PendingResearcher = {
   createdAt: string
 }
 
+export type AllResearcher = {
+  id: string
+  fullName: string
+  email: string
+  approvalStatus: string
+  createdAt: string
+  _count: {
+    submissions: number
+  }
+}
+
+export type PaginationMeta = {
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+}
+
+export type PaginatedResearchers = {
+  data: AllResearcher[]
+  meta: PaginationMeta
+}
+
+export type PaginatedPendingResearchers = {
+  data: PendingResearcher[]
+  meta: PaginationMeta
+}
+
+export type PaginatedPendingSubmissions = {
+  data: PendingSubmission[]
+  meta: PaginationMeta
+}
+
+export type PaginatedPublishedSubmissions = {
+  data: PublishedSubmission[]
+  meta: PaginationMeta
+}
+
 export type PendingSubmission = {
   id: string
   district: string
@@ -71,6 +109,23 @@ export type PublishedSubmission = {
   riskLevel: string
   narrative: string
   publishedAt: string | null
+}
+
+export type ResearcherSubmission = {
+  id: string
+  district: string
+  division: string
+  upazilaCode: number | null
+  upazilaName: string | null
+  ce: number
+  ag: number
+  ps: number
+  ac: number
+  riskIndex: number
+  riskLevel: string
+  narrative: string
+  status: string
+  createdAt: string
 }
 
 export type CreateSubmissionPayload = {

@@ -34,69 +34,62 @@ export function SignUpPage() {
   }, [navigate, signUpStatus])
 
   return (
-    <AuthLayout
-      title="Create your account"
-      subtitle="Researcher sign-up sends your profile into the admin approval queue before dashboard access is unlocked."
-      asideTitle="A cleaner onboarding flow for researchers"
-      asideText="Sign up once, get reviewed by admin, then continue into the same dashboard experience with your own researcher tools and submission history."
-    >
-      <StatusMessage tone="success" message={signUpMessage} />
-      <StatusMessage tone="error" message={error} />
-      <form
-        className="space-y-5"
-        onSubmit={(event) => {
-          event.preventDefault()
-          dispatch(signUp(form))
-        }}
-      >
-        <InputField
-          label="Full name"
-          autoComplete="name"
-          value={form.fullName}
-          onChange={(event) =>
-            setForm((current) => ({ ...current, fullName: event.target.value }))
-          }
-          placeholder="Researcher name"
-          required
-        />
-        <InputField
-          label="Email"
-          type="email"
-          autoComplete="email"
-          value={form.email}
-          onChange={(event) =>
-            setForm((current) => ({ ...current, email: event.target.value }))
-          }
-          placeholder="researcher@example.com"
-          required
-        />
-        <InputField
-          label="Password"
-          type="password"
-          autoComplete="new-password"
-          value={form.password}
-          onChange={(event) =>
-            setForm((current) => ({ ...current, password: event.target.value }))
-          }
-          placeholder="At least 6 characters"
-          minLength={6}
-          required
-          hint="Use at least 6 characters. After approval, this password will be used for sign in."
-        />
-        <Button
-          type="submit"
-          busy={signUpStatus === 'loading'}
-          className="h-13 w-full"
+    <AuthLayout title="Sign up" variant="plain">
+      <div className="space-y-5">
+        <StatusMessage tone="success" message={signUpMessage} />
+        <StatusMessage tone="error" message={error} />
+        <form
+          className="space-y-5"
+          onSubmit={(event) => {
+            event.preventDefault()
+            dispatch(signUp(form))
+          }}
         >
-          Create account
-        </Button>
-      </form>
-      <div className="rounded-3xl border border-white/10 bg-white/4 p-4 text-sm text-white/65">
-        <p className="font-medium text-white">Already approved?</p>
-        <p className="mt-1 leading-6">
-          Return to the sign-in page and enter your credentials.{' '}
-          <Link className="font-semibold text-lime-200 hover:text-lime-100" to="/sign-in">
-            Back to sign in
+          <InputField
+            label="Full name"
+            autoComplete="name"
+            value={form.fullName}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, fullName: event.target.value }))
+            }
+            placeholder="Researcher name"
+            required
+          />
+          <InputField
+            label="Email"
+            type="email"
+            autoComplete="email"
+            value={form.email}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, email: event.target.value }))
+            }
+            placeholder="researcher@example.com"
+            required
+          />
+          <InputField
+            label="Password"
+            type="password"
+            autoComplete="new-password"
+            value={form.password}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, password: event.target.value }))
+            }
+            placeholder="At least 6 characters"
+            minLength={6}
+            required
+          />
+          <Button
+            type="submit"
+            busy={signUpStatus === 'loading'}
+            className="h-13 w-full"
+          >
+            Create account
+          </Button>
+        </form>
+        <p className="text-center text-sm text-slate-500">
+          Already have an account?{' '}
+          <Link className="font-semibold text-emerald-600 hover:text-emerald-700" to="/sign-in">
+            Sign in
           </Link>
         </p>
       </div>

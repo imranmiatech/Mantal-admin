@@ -4,6 +4,11 @@ import { PublicOnlyRoute } from './features/auth/components/PublicOnlyRoute'
 import { SignInPage } from './features/auth/pages/SignInPage'
 import { SignUpPage } from './features/auth/pages/SignUpPage'
 import { DashboardPage } from './features/admin/pages/DashboardPage'
+import CreateSubmissionPage from './features/admin/pages/CreateSubmissionPage'
+import PendingResearchersPage from './features/admin/pages/PendingResearchersPage'
+import PendingSubmissionsPage from './features/admin/pages/PendingSubmissionsPage'
+import PublishedSubmissionsPage from './features/admin/pages/PublishedSubmissionsPage'
+import AllResearchersPage from './features/admin/pages/AllResearchersPage'
 import { UnauthorizedPage } from './features/auth/pages/UnauthorizedPage'
 
 function App() {
@@ -32,6 +37,46 @@ function App() {
           element={
             <ProtectedRoute>
               <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/create"
+          element={
+            <ProtectedRoute>
+              <CreateSubmissionPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/pending-researchers"
+          element={
+            <ProtectedRoute>
+              <PendingResearchersPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/pending-submissions"
+          element={
+            <ProtectedRoute>
+              <PendingSubmissionsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/published"
+          element={
+            <ProtectedRoute>
+              <PublishedSubmissionsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/researchers"
+          element={
+            <ProtectedRoute>
+              <AllResearchersPage />
             </ProtectedRoute>
           }
         />

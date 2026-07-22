@@ -24,11 +24,19 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   }
 
   if (!initialized || (token && !user)) {
-    return <div className="shell shell--center">Checking your dashboard session...</div>
+    return (
+      <div className="flex min-h-screen w-full items-center justify-center bg-slate-50 px-4 text-sm font-semibold text-slate-500">
+        Checking your dashboard session...
+      </div>
+    )
   }
 
   if (!user) {
-    return <div className="shell shell--center">Checking your dashboard session...</div>
+    return (
+      <div className="flex min-h-screen w-full items-center justify-center bg-slate-50 px-4 text-sm font-semibold text-slate-500">
+        Checking your dashboard session...
+      </div>
+    )
   }
 
   return <>{children}</>
